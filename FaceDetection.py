@@ -34,7 +34,7 @@ while True:
 
     cv2.imshow('Video', frame)  # mostra il frame sul display del pc
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):  # quit
+    if cv2.waitKey(1) & 0xFF == ord('q'):  # quit from script
         break
 
 # rilascio risorse
