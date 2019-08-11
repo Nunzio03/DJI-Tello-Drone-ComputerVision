@@ -2,7 +2,7 @@ import cv2
 import sys
 from djitellopy import Tello
 
-TOLLERANCE_X = 80
+TOLLERANCE_X = 20
 TOLLERANCE_Y = 20
 
 cascPath = sys.argv[1]  # percorso modello da rilevare
@@ -50,19 +50,21 @@ while True:
         distanceX = x+w/2 - 960/3
         distanceY = y+h/2 - 720/3
 
-        #if distanceX < -TOLLERANCE_X:
-        #    print("sposta il drone alla sua SX")
-        #elif distanceX > TOLLERANCE_X:
-        #    print("sposta il drone alla sua DX")
-        #else:
-        #    print("OK")
+        if distanceX < -TOLLERANCE_X:
+            print("sposta il drone alla sua SX")
+            drone.move_left(20)
+        elif distanceX > TOLLERANCE_X:
+            print("sposta il drone alla sua DX")
+            drone.move_right(20)
+        else:
+            print("OK")
 
         if distanceY < -TOLLERANCE_Y:
             print("sposta il drone in ALTO")
             drone.move_up(20)
         elif distanceY > TOLLERANCE_Y:
             print("sposta il drone in BASSO")
-            drone.move_down(25)
+            drone.move_down(20)
 
         else:
             print("OK")
