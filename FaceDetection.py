@@ -2,8 +2,8 @@ import cv2
 import sys
 from djitellopy import Tello
 
-TOLLERANCE_X = 20
-TOLLERANCE_Y = 20
+TOLERANCE_X = 5
+TOLERANCE_Y = 5
 
 cascPath = sys.argv[1]  # percorso modello da rilevare
 faceCascade = cv2.CascadeClassifier(cascPath)
@@ -50,19 +50,19 @@ while True:
         distanceX = x+w/2 - 960/3
         distanceY = y+h/2 - 720/3
 
-        if distanceX < -TOLLERANCE_X:
+        if distanceX < -TOLERANCE_X:
             print("sposta il drone alla sua SX")
             drone.move_left(20)
-        elif distanceX > TOLLERANCE_X:
+        elif distanceX > TOLERANCE_X:
             print("sposta il drone alla sua DX")
             drone.move_right(20)
         else:
             print("OK")
 
-        if distanceY < -TOLLERANCE_Y:
+        if distanceY < -TOLERANCE_Y:
             print("sposta il drone in ALTO")
             drone.move_up(20)
-        elif distanceY > TOLLERANCE_Y:
+        elif distanceY > TOLERANCE_Y:
             print("sposta il drone in BASSO")
             drone.move_down(20)
 
