@@ -4,6 +4,9 @@ from djitellopy import Tello
 
 TOLERANCE_X = 5
 TOLERANCE_Y = 5
+SLOWDOWN_THRESHOLD_X = 20
+SLOWDOWN_THRESHOLD_Y = 20
+DRONE_SPEED = 20
 
 cascPath = sys.argv[1]  # percorso modello da rilevare
 faceCascade = cv2.CascadeClassifier(cascPath)
@@ -50,24 +53,35 @@ while True:
         distanceX = x+w/2 - 960/3
         distanceY = y+h/2 - 720/3
 
+        up_down_velocity = 0
+        right_left_velocity = 0
+
         if distanceX < -TOLERANCE_X:
             print("sposta il drone alla sua SX")
-            drone.move_left(20)
+            right_left_velocity = - DRONE_SPEED
+
         elif distanceX > TOLERANCE_X:
             print("sposta il drone alla sua DX")
-            drone.move_right(20)
+            right_left_velocity = DRONE_SPEED
         else:
             print("OK")
 
         if distanceY < -TOLERANCE_Y:
             print("sposta il drone in ALTO")
-            drone.move_up(20)
+            up_down_velocity = DRONE_SPEED
         elif distanceY > TOLERANCE_Y:
             print("sposta il drone in BASSO")
-            drone.move_down(20)
+            up_down_velocity = - DRONE_SPEED
 
         else:
             print("OK")
+
+        if abs(distanceX) < SLOWDOWN_THRESHOLD_X:
+            right_left_velocity = right_left_velocity / 2
+        if abs(distanceY) < SLOWDOWN_THRESHOLD_Y:
+            up_down_velocity = up_down_velocity / 2
+
+        drone.send_rc_control(right_left_velocity, 0, up_down_velocity, 0)
 
     cv2.imshow('Video', frame)  # mostra il frame sul display del pc
 
