@@ -3,16 +3,16 @@ import sys
 from djitellopy import Tello
 import time
 
-Kpx = 0
+Kpx = 1
 Kix = 0
 Kdx = 0
-Kpy = 0
+Kpy = 1
 Kiy = 0
 Kdy = 0
 
 DELAY = 0.02
-SET_POINT_X = 960/3
-SET_POINT_Y = 720/3
+SET_POINT_X = 640 / 2
+SET_POINT_Y = 480 / 2
 
 previous_error_x = 0
 integral_x = 0
@@ -58,17 +58,21 @@ while True:
 
         cv2.circle(frame, (int(SET_POINT_X), int(SET_POINT_Y)), 12, (0, 255, 255), 8)  # setpoint circle
 
-        error_x = x+w/2 - SET_POINT_X
-        error_y = y+w/2 - SET_POINT_Y
+        error_x = (x+w/2) - SET_POINT_X
+        error_y = SET_POINT_Y - (y+w/2)
         integral_x = integral_x + error_x * DELAY
         integral_y = integral_y + error_x * DELAY
         derivative_x = (error_x - previous_error_x) / DELAY
         derivative_y = (error_y - previous_error_y) / DELAY
         output_x = Kpx * error_x + Kix * integral_x + Kdx * derivative_x
         output_y = Kpy * error_y + Kiy * integral_y + Kdy * derivative_y
+        bounded_output_x = 100 * output_x / SET_POINT_X
+        bounded_output_y = 100 * output_y / SET_POINT_Y
+        # outx:240 = mapx : 100
         previous_error_x = error_x
         previous_error_y = error_y
-        print(output_x)
+        print("output X : ", bounded_output_x)
+        print("output Y : ", bounded_output_y)
         # drone.send_rc_control(0, 0, up_down_velocity, 0)
 
         time.sleep(DELAY)
