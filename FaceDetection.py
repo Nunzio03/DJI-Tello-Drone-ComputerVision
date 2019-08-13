@@ -6,8 +6,8 @@ TOLERANCE_X = 5
 TOLERANCE_Y = 5
 SLOWDOWN_THRESHOLD_X = 20
 SLOWDOWN_THRESHOLD_Y = 20
-DRONE_SPEED = 20
-
+DRONE_SPEED_X = 20
+DRONE_SPEED_Y = 40
 cascPath = sys.argv[1]  # percorso modello da rilevare
 faceCascade = cv2.CascadeClassifier(cascPath)
 drone = Tello()  # dichiaro l'oggetto drone
@@ -58,20 +58,20 @@ while True:
 
         if distanceX < -TOLERANCE_X:
             print("sposta il drone alla sua SX")
-            right_left_velocity = - DRONE_SPEED
+            right_left_velocity = - DRONE_SPEED_X
 
         elif distanceX > TOLERANCE_X:
             print("sposta il drone alla sua DX")
-            right_left_velocity = DRONE_SPEED
+            right_left_velocity = DRONE_SPEED_X
         else:
             print("OK")
 
         if distanceY < -TOLERANCE_Y:
             print("sposta il drone in ALTO")
-            up_down_velocity = DRONE_SPEED
+            up_down_velocity = DRONE_SPEED_Y
         elif distanceY > TOLERANCE_Y:
             print("sposta il drone in BASSO")
-            up_down_velocity = - DRONE_SPEED
+            up_down_velocity = - DRONE_SPEED_Y
 
         else:
             print("OK")
