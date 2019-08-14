@@ -7,9 +7,9 @@ TOLERANCE_Y = 5
 SLOWDOWN_THRESHOLD_X = 20
 SLOWDOWN_THRESHOLD_Y = 20
 DRONE_SPEED_X = 20
-DRONE_SPEED_Y = 40
-SET_POINT_X = 960/3
-SET_POINT_Y = 720/3
+DRONE_SPEED_Y = 20
+SET_POINT_X = 960/2
+SET_POINT_Y = 720/2
 
 
 cascPath = sys.argv[1]  # Path of the model used to reveal faces
