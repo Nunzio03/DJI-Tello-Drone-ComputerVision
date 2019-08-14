@@ -43,11 +43,8 @@ while True:
     i = 0
     # Decorating image for debug purposes and looping through every detected face
     for (x, y, w, h) in faces:
-        color = (255, 0, 0)
-        if i != 0:
-            color = (0, 0, 255)
 
-        cv2.rectangle(frame, (x, y), (x+w, y+h), color, 5)  # contour rectangle
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 5)  # contour rectangle
         cv2.circle(frame, (int(x+w/2), int(y+h/2)), 12, (255, 0, 0), 1)  # face-centered circle
         # print(frame.shape)
         # cv2.line(frame, (int(x+w/2), int(720/2)), (int(960/2), int(720/2)), (0, 255, 255))
