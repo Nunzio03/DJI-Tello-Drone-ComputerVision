@@ -3,12 +3,15 @@ import sys
 from djitellopy import Tello
 import time
 
+# PID constants, tuning needed
 Kpx = 0
 Kix = 0
 Kdx = 0
 Kpy = 2
 Kiy = 0
 Kdy = 1
+
+#
 
 DELAY = 0.002
 SET_POINT_X = 960 / 2
