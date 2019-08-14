@@ -20,5 +20,5 @@ This is a problem because the algorithm adjust its movement according to every f
 # TO DO
 
 i'm working in : <br>
--Adding a PID algorithm for position control, in order to limit oscillation and adjust drone speed
+-Adding a PID algorithm for position control, in order to limit oscillation and adjust drone speed <br>
 -Adding a face tracking with ID assignment, in order to follow just one given face 
