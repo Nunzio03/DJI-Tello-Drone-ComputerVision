@@ -4,15 +4,27 @@ from djitellopy import Tello
 from FaceTrackerSupport import FacePointer
 import time
 
-TOLERANCE_X = 5
-TOLERANCE_Y = 5
-SLOWDOWN_THRESHOLD_X = 20
-SLOWDOWN_THRESHOLD_Y = 20
-DRONE_SPEED_X = 20
-DRONE_SPEED_Y = 20
+
 SET_POINT_X = 960/2
 SET_POINT_Y = 720/2
-EXPIRATION_TIME = 5
+
+EXPIRATION_TIME = 5  # maximum time in which a face is kept int the register if it is not in a frame
+
+# PID constants, tuning needed
+Kpx = 0
+Kix = 0
+Kdx = 0
+
+Kpy = 1
+Kiy = 0
+Kdy = 0
+
+DELAY = 0.002
+
+previous_error_x = 0
+integral_x = 0
+previous_error_y = 0
+integral_y = 0
 
 cascPath = sys.argv[1]  # Path of the model used to reveal faces
 faceCascade = cv2.CascadeClassifier(cascPath)
@@ -40,9 +52,9 @@ idCounter = 0
 while True:
 
     # loop through frames
-    # ret, frame = video_capture.read()  # used to collect frame from alternative video streams
+    ret, frame = video_capture.read()  # used to collect frame from alternative video streams... debug purposes
 
-    frame = drone.get_frame_read().frame  # capturing frame from drone
+    # frame = drone.get_frame_read().frame  # capturing frame from drone
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # turning image into gray scale
 
     faces = faceCascade.detectMultiScale(  # face detection
@@ -63,7 +75,6 @@ while True:
 
         actualFaces[idCounter] = FacePointer(idCounter, x, y, w, h)
 
-        print(idCounter)
         newActualFaces = actualFaces.copy()
 
     for actFace in actualFaces:
@@ -97,7 +108,6 @@ while True:
         cv2.circle(frame, (int(SET_POINT_X), int(SET_POINT_Y)), 12, (255, 255, 0), 8)  # setpoint circle
         cv2.putText(frame, str(newActualFaces[actFace].ID), (x, y), 1, 2, (0, 0, 255))
 
-
         """
         
         
@@ -106,14 +116,33 @@ while True:
         
         
         """
+        error_x = (x + w / 2) - SET_POINT_X
+        error_y = SET_POINT_Y - (y + w / 2)
+        integral_x = integral_x + error_x * DELAY
+        integral_y = integral_y + error_x * DELAY
+        derivative_x = (error_x - previous_error_x) / DELAY
+        derivative_y = (error_y - previous_error_y) / DELAY
+        output_x = Kpx * error_x + Kix * integral_x + Kdx * derivative_x
+        output_y = Kpy * error_y + Kiy * integral_y + Kdy * derivative_y
+        bounded_output_x = int(100 * output_x / SET_POINT_X)
+        bounded_output_y = int(100 * output_y / SET_POINT_Y)
+        # outx:240 = mapx : 100
+        previous_error_x = error_x
+        previous_error_y = error_y
+        # print("output X : ", bounded_output_x)
+        # print("output Y : ", bounded_output_y)
 
+        drone.send_rc_control(bounded_output_x, 0, bounded_output_y, 0)
 
-        
+        time.sleep(DELAY)
 
     cv2.imshow('Video', frame)  # mostra il frame sul display del pc
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):  # quit from script
+    if cv2.waitKey(1) & 0xFF == ord('q'): # quit from script
+        drone.land()
+        print(drone.get_battery())
         break
+
 
 # rilascio risorse
 # video_capture.release()
