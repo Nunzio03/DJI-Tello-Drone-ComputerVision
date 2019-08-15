@@ -12,7 +12,7 @@ DRONE_SPEED_X = 20
 DRONE_SPEED_Y = 20
 SET_POINT_X = 960/2
 SET_POINT_Y = 720/2
-
+EXPIRATION_TIME = 5
 
 cascPath = sys.argv[1]  # Path of the model used to reveal faces
 faceCascade = cv2.CascadeClassifier(cascPath)
@@ -26,12 +26,12 @@ drone.streamon()  # start camera streaming
 
 # video_capture = cv2.VideoCapture("udp://0.0.0.0:11111")  # raw video from drone streaming address
 # video_capture = cv2.VideoCapture("rtsp://192.168.1.1")  #raw video from action cam Apeman
-# video_capture = cv2.VideoCapture(0)  # raw video from webcam
+video_capture = cv2.VideoCapture(0)  # raw video from webcam
 
 faceRegister = dict()
 actualFaces = dict()
 newActualFaces = dict()
-EXPIRATION_TIME = 5
+
 last_expiration_time = time.time()
 
 idCounter = 0
@@ -55,8 +55,15 @@ while True:
     actualFaces = dict()
     # Decorating image for debug purposes and looping through every detected face
     for (x, y, w, h) in faces:
+        if idCounter > 99:
+            idCounter = 0
+
+        if idCounter in actualFaces or idCounter in faceRegister:
+            idCounter = idCounter + 1
+
         actualFaces[idCounter] = FacePointer(idCounter, x, y, w, h)
-        idCounter = idCounter+1
+
+        print(idCounter)
         newActualFaces = actualFaces.copy()
 
     for actFace in actualFaces:
@@ -71,7 +78,7 @@ while True:
             faceRegister.pop(faceObjID)
         actualFaces[actFace].ID = faceObjID
         newActualFaces[faceObjID] = actualFaces[actFace]
-    print(time.time()-last_expiration_time)
+
     if time.time()-last_expiration_time > EXPIRATION_TIME:
         last_expiration_time = time.time()
         faceRegister = dict()
@@ -99,7 +106,7 @@ while True:
         
         
         """
-        if actFace == 0:
+        if True:
             distanceX = x+w/2 - SET_POINT_X
             distanceY = y+h/2 - SET_POINT_Y
 
