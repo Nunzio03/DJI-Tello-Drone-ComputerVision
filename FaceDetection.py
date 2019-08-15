@@ -2,6 +2,7 @@ import cv2
 import sys
 from djitellopy import Tello
 from FaceTrackerSupport import FacePointer
+import time
 
 TOLERANCE_X = 5
 TOLERANCE_Y = 5
@@ -30,8 +31,11 @@ drone.streamon()  # start camera streaming
 faceRegister = dict()
 actualFaces = dict()
 newActualFaces = dict()
+EXPIRATION_TIME = 5
+last_expiration_time = time.time()
 
 idCounter = 0
+
 
 while True:
 
@@ -67,6 +71,10 @@ while True:
             faceRegister.pop(faceObjID)
         actualFaces[actFace].ID = faceObjID
         newActualFaces[faceObjID] = actualFaces[actFace]
+    print(time.time()-last_expiration_time)
+    if time.time()-last_expiration_time > EXPIRATION_TIME:
+        last_expiration_time = time.time()
+        faceRegister = dict()
 
     for actFace in newActualFaces:
         faceRegister[actFace] = newActualFaces[actFace]
