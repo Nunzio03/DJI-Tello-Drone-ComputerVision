@@ -13,13 +13,13 @@ SET_POINT_Y = 720/2
 EXPIRATION_TIME = 5  # maximum time in which a face is kept int the register if it is not in a frame
 
 # PID constants, tuning needed
-Kpx = 1
+Kpx = 0
 Kix = 0
 Kdx = 0
 
-Kpy = 0
+Kpy = 0.7
 Kiy = 0
-Kdy = 0
+Kdy = 0.3
 
 DELAY = 0.00002
 start_time = 0
@@ -99,6 +99,7 @@ while True:
     if time.time()-last_expiration_time > EXPIRATION_TIME:
         last_expiration_time = time.time()
         faceRegister = dict()
+        newActualFaces = dict()
 
     for actFace in newActualFaces:
         faceRegister[actFace] = newActualFaces[actFace]
@@ -113,21 +114,18 @@ while True:
         # cv2.line(frame, (int(x+w/2), int(720/2)), (int(960/2), int(720/2)), (0, 255, 255))
         cv2.circle(frame, (int(SET_POINT_X), int(SET_POINT_Y)), 12, (255, 255, 0), 8)  # setpoint circle
         cv2.putText(frame, str(newActualFaces[actFace].ID), (x, y), 1, 2, (0, 0, 255))
+
         '''if xTime.__len__() > 20:
             xTime = []
             xVal = []
 
         xTime.append(time.time())
-        xVal.append(x + w / 2)
+        xVal.append(y + h / 2)
 
         plt.plot(xTime, xVal)
         plt.pause(DELAY)
         plt.show(block=False)
-
-    '''
-
-
-
+'''
         """
         
         
@@ -140,7 +138,7 @@ while True:
         error_x = (x + w / 2) - SET_POINT_X
         error_y = SET_POINT_Y - (y + w / 2)
         integral_x = integral_x + error_x * delay_pid
-        integral_y = integral_y + error_x * delay_pid
+        integral_y = integral_y + error_y * delay_pid
         derivative_x = (error_x - previous_error_x) / delay_pid
         derivative_y = (error_y - previous_error_y) / delay_pid
         output_x = Kpx * error_x + Kix * integral_x + Kdx * derivative_x
