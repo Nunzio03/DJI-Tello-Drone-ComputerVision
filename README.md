@@ -1,4 +1,4 @@
-# DJI-Tello-ComputerVision
+# DJI-Tello-Drone-ComputerVision
 This is a ComputerVision/Control algorithm which forces a DJI Tello drone to center the camera according to your face position.
 
 # Dependencies 
