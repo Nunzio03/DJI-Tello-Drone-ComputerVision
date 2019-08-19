@@ -40,7 +40,6 @@ class PlotMeasurements (threading.Thread):
         self.nome = nome
         plt.ion()
 
-    @staticmethod
     def plot(self):
         global xTime, xVal, DELAY
         plt.plot(xTime, xVal)
