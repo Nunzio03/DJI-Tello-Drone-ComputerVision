@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 SET_POINT_X = 960/2
-SET_POINT_Y = 480/2  # 720/2
+SET_POINT_Y = 720/2
 
 EXPIRATION_TIME = 2  # maximum time in which a face is kept in the register if it is not in a frame
 
@@ -18,7 +18,7 @@ Kix = 0
 Kdx = 0
 
 Kpy = 0
-Kiy = 0.3
+Kiy = 0
 Kdy = 0
 
 DELAY = 0.02
@@ -67,7 +67,7 @@ drone.streamon()  # start camera streaming
 
 # video_capture = cv2.VideoCapture("udp://0.0.0.0:11111")  # raw video from drone streaming address
 # video_capture = cv2.VideoCapture("rtsp://192.168.1.1")  #raw video from action cam Apeman
-video_capture = cv2.VideoCapture(0)  # raw video from webcam
+# video_capture = cv2.VideoCapture(0)  # raw video from webcam
 
 faceRegister = dict()
 actualFaces = dict()
@@ -81,9 +81,9 @@ idCounter = 0
 while True:
 
     # loop through frames
-    ret, frame = video_capture.read()  # used to collect frame from alternative video streams... debug purposes
+    # ret, frame = video_capture.read()  # used to collect frame from alternative video streams... debug purposes
 
-    # frame = drone.get_frame_read().frame  # capturing frame from drone
+    frame = drone.get_frame_read().frame  # capturing frame from drone
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # turning image into gray scale
 
     faces = faceCascade.detectMultiScale(  # face detection
@@ -139,7 +139,7 @@ while True:
         cv2.putText(frame, str(newActualFaces[actFace].ID), (x, y), 1, 2, (0, 0, 255))
 
         xTime.append(time.time())
-        xVal.append(x + w / 2)
+        xVal.append(y + h / 2)
 
         """
         
@@ -171,12 +171,12 @@ while True:
         output_y = Kpy * error_y + Kiy * integral_y + Kdy * derivative_y
         bounded_output_x = int(100 * output_x / SET_POINT_X)
         bounded_output_y = int(100 * output_y / SET_POINT_Y)
-        # outx:240 = mapx : 100
+        # outx:setpoint = mapx : 100
         previous_error_x = error_x
         previous_error_y = error_y
         # print("output X : ", bounded_output_x)
-        print("output Y : ", bounded_output_y)
-
+        # print("output Y : ", bounded_output_y)
+        print(Kpy)
         drone.send_rc_control(bounded_output_x, 0, bounded_output_y, 0)
 
         time.sleep(DELAY)
@@ -184,10 +184,11 @@ while True:
     cv2.imshow('Video', frame)  # mostra il frame sul display del pc
 
     if cv2.waitKey(1) & 0xFF == ord('q'):  # quit from script
-        drone.land()
-        print(drone.get_battery())
+        # drone.land()
+        # print(drone.get_battery())
+        Kpy = Kpy + 0.05
 
-        break
+        # break
 
 
 # rilascio risorse
