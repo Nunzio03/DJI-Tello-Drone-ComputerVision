@@ -1,36 +1,60 @@
 import cv2
-import sys
 from djitellopy import Tello
 from FaceTrackerSupport import FacePointer
 import time
-import numpy as np
+import threading
+from drawnow import *
 import matplotlib.pyplot as plt
 
 
 SET_POINT_X = 960/2
-SET_POINT_Y = 720/2
+SET_POINT_Y = 480/2  # 720/2
 
-EXPIRATION_TIME = 5  # maximum time in which a face is kept int the register if it is not in a frame
+EXPIRATION_TIME = 2  # maximum time in which a face is kept in the register if it is not in a frame
 
 # PID constants, tuning needed
 Kpx = 0
 Kix = 0
 Kdx = 0
 
-Kpy = 0.7
-Kiy = 0
-Kdy = 0.3
+Kpy = 0
+Kiy = 0.3
+Kdy = 0
 
-DELAY = 0.00002
+DELAY = 0.02
 start_time = 0
 
 xVal = []
 xTime = []
 
+
 previous_error_x = 0
 integral_x = 0
 previous_error_y = 0
 integral_y = 0
+
+
+class PlotMeasurements (threading.Thread):
+    def __init__(self, nome):
+        threading.Thread.__init__(self)
+        self.nome = nome
+        plt.ion()
+
+    @staticmethod
+    def plot(self):
+        global xTime, xVal, DELAY
+        plt.plot(xTime, xVal)
+
+    def run(self):
+
+        while True:
+
+            drawnow(self.plot)
+
+
+threadPlot = PlotMeasurements("plot measurements")
+threadPlot.start()
+
 
 cascPath = sys.argv[1]  # Path of the model used to reveal faces
 faceCascade = cv2.CascadeClassifier(cascPath)
@@ -44,7 +68,7 @@ drone.streamon()  # start camera streaming
 
 # video_capture = cv2.VideoCapture("udp://0.0.0.0:11111")  # raw video from drone streaming address
 # video_capture = cv2.VideoCapture("rtsp://192.168.1.1")  #raw video from action cam Apeman
-# video_capture = cv2.VideoCapture(0)  # raw video from webcam
+video_capture = cv2.VideoCapture(0)  # raw video from webcam
 
 faceRegister = dict()
 actualFaces = dict()
@@ -58,9 +82,9 @@ idCounter = 0
 while True:
 
     # loop through frames
-    # ret, frame = video_capture.read()  # used to collect frame from alternative video streams... debug purposes
+    ret, frame = video_capture.read()  # used to collect frame from alternative video streams... debug purposes
 
-    frame = drone.get_frame_read().frame  # capturing frame from drone
+    # frame = drone.get_frame_read().frame  # capturing frame from drone
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # turning image into gray scale
 
     faces = faceCascade.detectMultiScale(  # face detection
@@ -98,7 +122,7 @@ while True:
 
     if time.time()-last_expiration_time > EXPIRATION_TIME:
         last_expiration_time = time.time()
-        faceRegister = dict()
+
         newActualFaces = dict()
 
     for actFace in newActualFaces:
@@ -115,17 +139,9 @@ while True:
         cv2.circle(frame, (int(SET_POINT_X), int(SET_POINT_Y)), 12, (255, 255, 0), 8)  # setpoint circle
         cv2.putText(frame, str(newActualFaces[actFace].ID), (x, y), 1, 2, (0, 0, 255))
 
-        '''if xTime.__len__() > 20:
-            xTime = []
-            xVal = []
-
         xTime.append(time.time())
-        xVal.append(y + h / 2)
+        xVal.append(x + w / 2)
 
-        plt.plot(xTime, xVal)
-        plt.pause(DELAY)
-        plt.show(block=False)
-'''
         """
         
         
@@ -135,10 +151,21 @@ while True:
         
         """
         delay_pid = time.time() - start_time
+        start_time = time.time()
         error_x = (x + w / 2) - SET_POINT_X
         error_y = SET_POINT_Y - (y + w / 2)
         integral_x = integral_x + error_x * delay_pid
         integral_y = integral_y + error_y * delay_pid
+
+        if integral_x > 100:
+            integral_x = 100
+        elif integral_x < -100:
+            integral_x = -100
+        if integral_y > 100:
+            integral_y = 100
+        elif integral_y < -100:
+            integral_y = - 100
+
         derivative_x = (error_x - previous_error_x) / delay_pid
         derivative_y = (error_y - previous_error_y) / delay_pid
         output_x = Kpx * error_x + Kix * integral_x + Kdx * derivative_x
@@ -148,19 +175,19 @@ while True:
         # outx:240 = mapx : 100
         previous_error_x = error_x
         previous_error_y = error_y
-        print("output X : ", bounded_output_x)
-        # print("output Y : ", bounded_output_y)
+        # print("output X : ", bounded_output_x)
+        print("output Y : ", bounded_output_y)
 
         drone.send_rc_control(bounded_output_x, 0, bounded_output_y, 0)
 
         time.sleep(DELAY)
 
-        start = time.time()
     cv2.imshow('Video', frame)  # mostra il frame sul display del pc
 
-    if cv2.waitKey(1) & 0xFF == ord('q'): # quit from script
+    if cv2.waitKey(1) & 0xFF == ord('q'):  # quit from script
         drone.land()
         print(drone.get_battery())
+
         break
 
 
