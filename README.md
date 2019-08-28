@@ -1,4 +1,4 @@
-# DJI-Tello-ComputerVision
+# DJI-Tello-Drone-ComputerVision
 This is a ComputerVision/Control algorithm which forces a DJI Tello drone to center the camera according to your face position.
 
 # Dependencies 
@@ -11,6 +11,10 @@ bash: <b> pip3 install -r requirements.txt </b>
 # Usage 
 run it with : <br>
 bash: <b> python3 FaceDetection.py haarcascade_frontalface_default.xml </b>
+
+# Videos
+all my test videos will be uploaded on my youtube channel and i will list them here: 
+- First test, no PID, no face logging : https://www.youtube.com/watch?v=WFz5I1iRhLY
 
 # Limitations
 
