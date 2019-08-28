@@ -12,6 +12,10 @@ bash: <b> pip3 install -r requirements.txt </b>
 run it with : <br>
 bash: <b> python3 FaceDetection.py haarcascade_frontalface_default.xml </b>
 
+# Videos
+all my test videos will be uploaded on my youtube channel and i will list them here: 
+- First test, no PID, no face logging : https://www.youtube.com/watch?v=WFz5I1iRhLY
+
 # Limitations
 
 it still has some limitations such as slow movements, setpoint oscillations and sometimes it detects faces that doesn't exist.
