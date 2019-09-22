@@ -17,11 +17,11 @@ Kpx = 0
 Kix = 0
 Kdx = 0
 
-Kpy = 0
+Kpy = 1.3
 Kiy = 0
 Kdy = 0
 
-DELAY = 0.02
+DELAY = 0.0002
 start_time = 0
 
 xVal = []
