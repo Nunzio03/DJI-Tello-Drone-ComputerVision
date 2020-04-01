@@ -18,7 +18,7 @@ all my test videos will be uploaded on my youtube channel and i will list them h
 
 # Limitations
 
-it still has some limitations such as slow movements, setpoint oscillations and sometimes it detects faces that doesn't exist.
+it still has some limitations such as slow movements, setpoint oscillations and sometimes it detects faces that do not exist.
 This is a problem because the algorithm adjust its movement according to every face in the frame
 
 # TO DO
