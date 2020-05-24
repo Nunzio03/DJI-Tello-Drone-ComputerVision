@@ -3,8 +3,8 @@ This is a ComputerVision/Control algorithm which forces a DJI Tello drone to cen
 
 # Dependencies 
 This algorithm uses : <br>
-djitellopy ver 1.5 by https://github.com/damiafuentes
-opencv-python ver 4.1.0.25 
+djitellopy ver 1.5 by https://github.com/damiafuentes <br>
+opencv-python ver 4.1.0.25 <br>
 
 install with: <br>
 bash: <b> pip3 install -r requirements.txt </b>
